@@ -95,7 +95,7 @@ int dht22_get_result(struct dht22 *dht22)
 		return -1;
 	}
 
-	delay_ms(10);
+	delay_ms(100);
 
 	if (HAL_TIM_IC_Stop_IT(&htim3, TIM_CHANNEL_1) != HAL_OK) {
 		return -1;

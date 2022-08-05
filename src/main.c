@@ -154,25 +154,35 @@ int main(void) {
 		ssd1306_UpdateScreen();
 
 		int ret = dht22_get_result(&dht22);
-		if (ret)
+		if (ret) {
+			GPIO_setBit(LED_port, LED_Blue);
 			continue;
+		} else {
+			GPIO_clearBit(LED_port, LED_Blue);
+		}
 
 		char buffer[32];
+		char uart_buffer[65];
+
 		memset(buffer, 0, sizeof(buffer));
+		memset(uart_buffer, 0, sizeof(uart_buffer));
+
 		int tone = dht22.temperature;
 		int ttwo = dht22.temperature * 100 - tone * 100;
 		int three = dht22.humidity;
 		snprintf(buffer, sizeof(buffer), "temp: %d.%d", tone, ttwo);
 		ssd1306_WriteString(buffer, Font_6x8, White);
 		ssd1306_SetCursor(10, 25);
+
 		snprintf(buffer, sizeof(buffer), "humi: %d", three);
 		ssd1306_WriteString(buffer, Font_6x8, White);
 		ssd1306_UpdateScreen();
 
-		buffer_set_text(&UART2_transmit_buffer, "test\n", 5);
+		snprintf(uart_buffer, sizeof(uart_buffer), "%d.%d;%d", tone, ttwo, three);
+		buffer_set_text(&UART2_transmit_buffer, uart_buffer, strlen(uart_buffer));
 		UART_2_transmit();
 
-		delay_ms(100);
+		delay_ms(3000);
 	}
 
 	return 0;
